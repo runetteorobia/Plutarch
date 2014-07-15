@@ -17,20 +17,27 @@
     
     <context:component-scan base-package="com.egg.plutarch" />
 
-    <bean id="connectionFactoryLocator" class="org.springframework.social.connect.support.ConnectionFactoryRegistry">
-        <property name="connectionFactories">
-            <list>
-                <bean class="org.springframework.social.facebook.connect.FacebookConnectionFactory">
-                    <constructor-arg value="1444675909116090" />
-                    <constructor-arg value="a10feeac531962c313aaa766aec79eb0" />				
-                </bean>
-            </list>
-        </property>
-    </bean>
-    
     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
         <!--<property name="maxUploadSize" value="268435456"/>  256 megs -->
     </bean>
-    <!--<bean id="facebook" class="org.springframework.social.facebook.api.Facebook" />-->
+    
+    <!-- Properties Files Location-->
+    <util:list id="propertiesLocation">
+        <value>classpath:config.properties</value>
+        <value>classpath:fb_apps.properties</value>
+    </util:list>
+    
+    <!-- Loads properties files from location -->
+    <bean id="allProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+        <property name="locations" ref="propertiesLocation" />
+    </bean>
+
+    <bean id="config" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="properties" ref="allProperties" />
+    </bean>
+	
+    <bean class="com.egg.plutarch.util.Config">
+        <property name="properties" ref="allProperties" />
+    </bean>
     
 </beans>

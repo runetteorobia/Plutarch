@@ -30,13 +30,15 @@ import net.sf.json.JSONObject;
  */
 public class ServiceUtil {
     
-    public static final String FACEBOOK_URL = "https://graph.facebook.com/";
-    public static final String FACEBOOK_NEW_TOKEN_URL = "https://graph.facebook.com/oauth/access_token?grant_type=fb_exchange_token&client_id=";
-    public static final String DELIMETER = "^";
-    public static final String NEW_LINE = "\n";
+//    public static final String FACEBOOK_URL = "https://graph.facebook.com/";
+//    public static final String FACEBOOK_NEW_TOKEN_URL = "https://graph.facebook.com/oauth/access_token?grant_type=fb_exchange_token&client_id=";
+    public static final String FACEBOOK_URL = Config.getProperties("facebook.graph.url");
+    public static final String FACEBOOK_NEW_TOKEN_URL = Config.getProperties("facebook.token.url");
+    public static final String DELIMETER = Config.getProperties("^");
+    public static final String NEW_LINE = Config.getProperties("");
     
-    public static final String APP_ID = "567790773331270";
-    public static final String APP_SECRET = "4a2f6044a70730a15abac8bd261e2d06";
+    public static final String APP_ID = Config.getProperties("app.id");
+    public static final String APP_SECRET = Config.getProperties("app.secret");
     
     private static Mongo mongo;
     private static DB db;
@@ -162,29 +164,6 @@ public class ServiceUtil {
     
     
      /***********METHODS USED FOR TESTING************/
-    public static List<String> parseCSVFile(InputStream is) throws IOException {
-        List<String> ids = new ArrayList<String>();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-        
-        String line = null;
-        Scanner scanner = null;
-        
-        while((line = reader.readLine()) != null) {
-            scanner = new Scanner(line);
-            scanner.useDelimiter("^");
-            while(scanner.hasNext()) {
-                String data = scanner.next();
-                String id = data.substring(0, data.indexOf("^"));
-                
-                ids.add(id);
-//                saveIdsToDb(id);
-            }
-        }
-        reader.close();
-        
-        return ids;
-    }
-    
     public static List<String> getIds(int place) throws UnknownHostException {
         
         initializeDb();
@@ -269,58 +248,6 @@ public class ServiceUtil {
         }
         
         return ids;
-        
-    }
-    
-    public static JSONObject getPageDetailsJson(String pageId, String accessToken) {
-        StringBuilder contents = new StringBuilder();
-        try {
-            URL oracle = new URL(FACEBOOK_URL + pageId + "?access_token=" + accessToken);
-            URLConnection yc = oracle.openConnection();
-            BufferedReader in = new BufferedReader(new InputStreamReader(yc.getInputStream()));
-            String inputLine = null;
-            while ((inputLine = in.readLine()) != null) 
-                contents.append(inputLine);
-            in.close();
-            
-        } catch(Exception e) {
-            System.out.println("ERROR: " + pageId + " | MESSAGE: " + e.getMessage());
-            return null; 
-        }
-        
-        return JSONObject.fromObject(contents.toString().trim());
-    }
-    
-    public static void saveUnprocessedIdsToNewCollection() {
-        
-        try {
-        
-            if(mongo == null) {
-                initializeDb();
-            }
-            
-            DBCollection newCollection = db.getCollection("facebook_ids");
-            DBCursor cursor;
-            
-            BasicDBObject whereQuery = new BasicDBObject();
-            whereQuery.put("status", "error");
-            
-            cursor = collection.find(whereQuery);
-            
-            String details = null;
-
-            while(cursor.hasNext()) {
-                JSONObject object = JSONObject.fromObject(cursor.next().toString());
-                DBObject dbObject = (DBObject) JSON.parse("{'page_id':'"+ object.get("id").toString() + "'}");
-                newCollection.insert(dbObject);
-            } 
-
-            
-        } catch (UnknownHostException ex) {
-            ex.printStackTrace();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
         
     }
     
