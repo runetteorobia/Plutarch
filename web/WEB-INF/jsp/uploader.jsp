@@ -6,34 +6,17 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
         <script src="http://connect.facebook.net/en_US/all.js"></script>
+        
         <script type="text/javascript">
-            var token = "";
             var app_id = ${appId};
-            
-            FB.init({
-                appId: app_id,
-                status: true,
-                cookie: true,
-                xfbml: true
-            });
-
-            FB.login(function(response) {
-                if (response.authResponse) {
-                    var access_token = FB.getAuthResponse()['accessToken'];
-                    token = access_token;
-                    console.log('Access Token = ' + access_token);
-                    enableButton();
-                } else {
-                    console.log('User cancelled login or did not fully authorize.');
-                }
-            }, {scope: ''});
-
-            function enableButton() {
-                document.getElementById("token").value = token;
-                document.getElementById("submitButton").disabled = false;
-            }
         </script>
+        
+        <script src="<c:url value="/js/facebook.js"/>" type="text/javascript"></script>
+        <script src="<c:url value="/js/userInterface.js"/>" type="text/javascript"></script>
+
     </head>
 
     <body>
@@ -43,20 +26,20 @@
             <input type="hidden" id="token" name="token" value="" />
             <input type="submit" id="submitButton" value="Upload" disabled="disabled" />
         </form>
-        
+
         <br/>
-        
+
         <b>Process Records</b> <br/>
         <button>Process Details</button>
         <button>Resume Processing of Details</button>
         <button>Process Errors</button>
-        
+
         <br/> <br/>
         <b>Extraction of Data</b> <br/>
-        <button>Extract all</button>
-        <button>Extract records</button>
-        <button>Extract errors</button>
+        <button onclick="">Extract all</button>
+        <button onclick="">Extract records</button>
+        <button onclick="">Extract errors</button>
 
-        
+
     </body>
 </html>

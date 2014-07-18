@@ -104,7 +104,7 @@ public class RecordsProcessingController {
         }
         
         try {
-            List<String> ids = ServiceUtil.getSpecialIds(skip);
+            List<String> ids = ServiceUtil.getRemainingIds(skip);
             
             StringBuilder results = new StringBuilder();
             String details = null;

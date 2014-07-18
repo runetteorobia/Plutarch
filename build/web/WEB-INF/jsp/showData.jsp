@@ -3,9 +3,10 @@
 
 <html>
     <head>
-        
+        <title>Test</title>
     </head>
     <body>
-        ${chenes}
+        APP ID: ${appId} <br/>
+        DETAILS: ${details}
     </body>
 </html>

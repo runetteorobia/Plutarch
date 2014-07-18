@@ -16,10 +16,6 @@
     <context:annotation-config />
     
     <context:component-scan base-package="com.egg.plutarch" />
-
-    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
-        <!--<property name="maxUploadSize" value="268435456"/>  256 megs -->
-    </bean>
     
     <!-- Properties Files Location-->
     <util:list id="propertiesLocation">
@@ -38,6 +34,10 @@
 	
     <bean class="com.egg.plutarch.util.Config">
         <property name="properties" ref="allProperties" />
+    </bean>
+    
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!--<property name="maxUploadSize" value="268435456"/>  256 MB -->
     </bean>
     
 </beans>

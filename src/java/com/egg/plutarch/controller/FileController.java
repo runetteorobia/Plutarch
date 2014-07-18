@@ -43,7 +43,6 @@ public class FileController {
     
     @RequestMapping(value="/form")
     public String displayMessage(HttpServletRequest request, HttpServletResponse response, ModelMap model) {
-        System.out.println("APP ID: " + Config.getProperties("app.id"));
         model.addAttribute("appId", Config.getProperties("app.id"));
         return "uploader";
     }

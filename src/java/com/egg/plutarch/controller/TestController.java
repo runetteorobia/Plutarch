@@ -4,7 +4,6 @@
  */
 package com.egg.plutarch.controller;
 
-import com.egg.plutarch.util.Config;
 import com.egg.plutarch.util.ServiceUtil;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;

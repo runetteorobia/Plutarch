@@ -30,8 +30,6 @@ import net.sf.json.JSONObject;
  */
 public class ServiceUtil {
     
-//    public static final String FACEBOOK_URL = "https://graph.facebook.com/";
-//    public static final String FACEBOOK_NEW_TOKEN_URL = "https://graph.facebook.com/oauth/access_token?grant_type=fb_exchange_token&client_id=";
     public static final String FACEBOOK_URL = Config.getProperties("facebook.graph.url");
     public static final String FACEBOOK_NEW_TOKEN_URL = Config.getProperties("facebook.token.url");
     public static final String DELIMETER = Config.getProperties("^");
@@ -194,7 +192,7 @@ public class ServiceUtil {
         return ids;
     }
     
-    public static List<String> getSpecialIds(int skip) throws UnknownHostException {
+    public static List<String> getRemainingIds(int skip) throws UnknownHostException {
         
         initializeDb();
         List<String> ids = new ArrayList<String>();
