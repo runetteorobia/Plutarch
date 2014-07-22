@@ -4,7 +4,6 @@
  */
 package com.egg.plutarch.util;
 
-import static com.egg.plutarch.util.ServiceUtil.FACEBOOK_URL;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,6 +20,8 @@ import net.sf.json.JSONObject;
  * @author Runette Orobia
  */
 public class TestUtil {
+    
+    public static final String FACEBOOK_URL = Config.getProperties("facebook.graph.url");
     
     public static List<String> parseCSVFile(InputStream is) throws IOException {
         List<String> ids = new ArrayList<String>();

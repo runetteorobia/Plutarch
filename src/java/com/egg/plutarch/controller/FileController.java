@@ -5,7 +5,8 @@
 package com.egg.plutarch.controller;
 
 import com.egg.plutarch.util.Config;
-import com.egg.plutarch.util.ServiceUtil;
+import com.egg.plutarch.util.DbUtil;
+import com.egg.plutarch.util.FacebookUtil;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
@@ -43,7 +44,12 @@ public class FileController {
     
     @RequestMapping(value="/form")
     public String displayMessage(HttpServletRequest request, HttpServletResponse response, ModelMap model) {
-        model.addAttribute("appId", Config.getProperties("app.id"));
+        try {
+            model.addAttribute("appId", Config.getProperties("app.id"));
+            model.addAttribute("idCount", DbUtil.getIdsCount());
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(FileController.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return "uploader";
     }
     
@@ -51,7 +57,7 @@ public class FileController {
     public synchronized void upload(MultipartHttpServletRequest request, HttpServletResponse response, 
         ModelMap model, @RequestParam("token") final String ACCESSTOKEN) throws IOException {
         
-        String newAccessToken = ServiceUtil.getNewToken(ACCESSTOKEN);
+        String newAccessToken = FacebookUtil.getNewToken(ACCESSTOKEN);
         
         if(!newAccessToken.isEmpty()) {
             accessToken = newAccessToken;
@@ -66,14 +72,14 @@ public class FileController {
         
         try{
             
-            ServiceUtil.saveIdsToDb(is);
-            List<String> ids = ServiceUtil.getAllIds();
+            DbUtil.saveIdsToDb(is);
+            List<String> ids = DbUtil.getAllIds();
             StringBuilder results = new StringBuilder();
             String details = null;
             
             for(String s : ids) {
-                details = ServiceUtil.getPageDetails(s, accessToken);
-                ServiceUtil.saveDetailsToDb(details);
+                details = FacebookUtil.getPageDetails(s, accessToken);
+                DbUtil.saveDetailsToDb(details);
             } 
             
             this.exportToCSV(request, response, model);
@@ -122,8 +128,8 @@ public class FileController {
                 outputStream.write(details.getBytes());
 
                 if(!details.isEmpty()) {
-                    outputStream.write(ServiceUtil.DELIMETER.getBytes());
-                    outputStream.write(ServiceUtil.NEW_LINE.getBytes());
+                    outputStream.write(DbUtil.DELIMETER.getBytes());
+                    outputStream.write(DbUtil.NEW_LINE.getBytes());
                 }
                 System.out.println(details);
             } 
@@ -181,8 +187,8 @@ public class FileController {
                 outputStream.write(details.getBytes());
 
                 if(!details.isEmpty()) {
-                    outputStream.write(ServiceUtil.DELIMETER.getBytes());
-                    outputStream.write(ServiceUtil.NEW_LINE.getBytes());
+                    outputStream.write(DbUtil.DELIMETER.getBytes());
+                    outputStream.write(DbUtil.NEW_LINE.getBytes());
                 }
                 System.out.println(details);
             } 
@@ -237,8 +243,8 @@ public class FileController {
                 outputStream.write(details.getBytes());
 
                 if(!details.isEmpty()) {
-                    outputStream.write(ServiceUtil.DELIMETER.getBytes());
-                    outputStream.write(ServiceUtil.NEW_LINE.getBytes());
+                    outputStream.write(DbUtil.DELIMETER.getBytes());
+                    outputStream.write(DbUtil.NEW_LINE.getBytes());
                 }
                 System.out.println(details);
             } 

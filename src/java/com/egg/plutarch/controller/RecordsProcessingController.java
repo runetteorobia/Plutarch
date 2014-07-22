@@ -4,7 +4,9 @@
  */
 package com.egg.plutarch.controller;
 
-import com.egg.plutarch.util.ServiceUtil;
+import com.egg.plutarch.util.Config;
+import com.egg.plutarch.util.DbUtil;
+import com.egg.plutarch.util.FacebookUtil;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.UnknownHostException;
@@ -30,11 +32,28 @@ public class RecordsProcessingController {
     private String accessToken = "";
     private OutputStream outputStream;
     
+    @RequestMapping(value = "/clone", method = RequestMethod.GET)
+    public synchronized String cloneCollection(HttpServletRequest request, HttpServletResponse response, ModelMap model) {
+        try {
+            
+            System.out.println("CLONING... ");
+            DbUtil.cloneCollection();
+            System.out.println("DONE.");
+            
+            model.addAttribute("appId", Config.getProperties("app.id"));
+            model.addAttribute("idCount", DbUtil.getIdsCount());
+            
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(RecordsProcessingController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return "uploader";
+    }
+    
     @RequestMapping(value = "/download", method = RequestMethod.GET)
     public synchronized void downloadRemaining(HttpServletRequest request, HttpServletResponse response, ModelMap model, 
         @RequestParam("token") final String ACCESSTOKEN) {
         
-        String newAccessToken = ServiceUtil.getNewToken(ACCESSTOKEN);
+        String newAccessToken = FacebookUtil.getNewToken(ACCESSTOKEN);
         
         if(!newAccessToken.isEmpty()) {
             accessToken = newAccessToken;
@@ -45,13 +64,13 @@ public class RecordsProcessingController {
         }
         
         try {
-            List<String> ids = ServiceUtil.getAllIds();
+            List<String> ids = DbUtil.getAllIds();
             StringBuilder results = new StringBuilder();
             String details = null;
             
             for(String s : ids) {
-                details = ServiceUtil.getPageDetails(s, accessToken);
-                ServiceUtil.saveDetailsToDb(details);
+                details = FacebookUtil.getPageDetails(s, accessToken);
+                DbUtil.saveDetailsToDb(details);
             } 
             
         } catch (UnknownHostException ex) {
@@ -66,11 +85,11 @@ public class RecordsProcessingController {
     public synchronized void proccessErrors(HttpServletRequest request, HttpServletResponse response, ModelMap model, 
         @RequestParam("token")  final String ACCESSTOKEN) throws UnknownHostException {
         
-        List<String> ids = ServiceUtil.getIdsWithErrors();
+        List<String> ids = DbUtil.getIdsWithErrors();
         StringBuilder results = new StringBuilder();
         String details = null;
 
-        String newAccessToken = ServiceUtil.getNewToken(ACCESSTOKEN);
+        String newAccessToken = FacebookUtil.getNewToken(ACCESSTOKEN);
         
         if(!newAccessToken.isEmpty()) {
             accessToken = newAccessToken;
@@ -81,9 +100,9 @@ public class RecordsProcessingController {
         }
         
         for(String s : ids) {
-            details = ServiceUtil.getPageDetails(s,accessToken);
+            details = FacebookUtil.getPageDetails(s,accessToken);
             if(!details.contains("\"status\":\"error\"")) {
-                ServiceUtil.updateDbDetails(details, s);
+                DbUtil.updateDbDetails(details, s);
             }
         } 
         
@@ -91,9 +110,10 @@ public class RecordsProcessingController {
  
     @RequestMapping(value = "/resume", method = RequestMethod.GET)
     public synchronized void resumeDownload(HttpServletRequest request, HttpServletResponse response, ModelMap model, 
-        @RequestParam("skip") int skip, @RequestParam("token") final String ACCESSTOKEN) {
+        @RequestParam(value = "skip", required = false, defaultValue = "0") int skip, 
+        @RequestParam("token") final String ACCESSTOKEN) {
         
-        String newAccessToken = ServiceUtil.getNewToken(ACCESSTOKEN);
+        String newAccessToken = FacebookUtil.getNewToken(ACCESSTOKEN);
         
         if(!newAccessToken.isEmpty()) {
             accessToken = newAccessToken;
@@ -104,14 +124,14 @@ public class RecordsProcessingController {
         }
         
         try {
-            List<String> ids = ServiceUtil.getRemainingIds(skip);
+            List<String> ids = DbUtil.getRemainingIds(skip);
             
             StringBuilder results = new StringBuilder();
             String details = null;
 
             for(String s : ids) {
-                details = ServiceUtil.getPageDetails(s,accessToken);
-                ServiceUtil.saveDetailsToDb(details);
+                details = FacebookUtil.getPageDetails(s,accessToken);
+                DbUtil.saveDetailsToDb(details);
             } 
             
         } catch (UnknownHostException ex) {
